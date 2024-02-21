@@ -1,0 +1,56 @@
+# -*- mode: org; fill-column: 78; -*-
+# Time-stamp: <2024-02-21 05:32:14 krylon>
+#
+#+TAGS: internals(i) ui(u) bug(b) feature(f)
+#+TAGS: database(d) design(e), meditation(m)
+#+TAGS: optimize(o) refactor(r) cleanup(c)
+#+TODO: TODO(t)  RESEARCH(r) IMPLEMENT(i) TEST(e) | DONE(d) FAILED(f) CANCELLED(c)
+#+TODO: MEDITATE(m) PLANNING(p) | SUSPENDED(s)
+#+PRIORITIES: A G D
+
+* Pythia
+  Pythia aims to be a desktop search engine, like Beagle or Tracker.
+  Pythia is named after the title of the priestress at the ancient Oracle of
+  Delphi. Before Apollo claimed the site, it was inhabited by a giant
+  snake/dragon named Python, which is where the giant snakes get their name
+  from, and ultimately the programming language Python as well (via Monty
+  Python).
+** Clocktable
+   :PROPERTIES:
+   :COOKIE_DATA: todo recursive
+   :VISIBILITY: children
+   :END:
+** Features [0/0]
+   :PROPERTIES:
+   :COOKIE_DATA: todo recursive
+   :VISIBILITY: children
+   :END:
+** Components [0/0]
+   :PROPERTIES:
+   :COOKIE_DATA: todo recursive
+   :VISIBILITY: children
+   :END:
+*** Database [0/0]
+    :PROPERTIES:
+    :COOKIE_DATA: todo recursive
+    :VISIBILITY: children
+    :END:
+*** Extractors [0/0]
+    :PROPERTIES:
+    :COOKIE_DATA: todo recursive
+    :VISIBILITY: children
+    :END:
+    Extractors attempt to get text content from various file formats.
+*** UI [0/0]
+    :PROPERTIES:
+    :COOKIE_DATA: todo recursive
+    :VISIBILITY: children
+    :END:
+    I have been thinking about trying out Qt5 or Qt6 which have Python
+    bindings. I used Qt4 in C++ years ago for a few toy projects, and I
+    remember the experience as being rather nice.
+** Bugs [0/0]
+   :PROPERTIES:
+   :COOKIE_DATA: todo recursive
+   :VISIBILITY: children
+   :END:
