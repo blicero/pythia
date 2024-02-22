@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-22 18:28:15 krylon>
+# Time-stamp: <2024-02-22 19:21:46 krylon>
 #
 # /data/code/python/pythia/data.py
 # created on 21. 02. 2024
@@ -21,19 +21,15 @@ This modules defines data types used throughout the application.
 
 import os
 import stat
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any
 
 
+@dataclass(slots=True)
 class Folder:  # pylint: disable-msg=R0903
     """Folder reprents a directory tree that we might want to scan."""
-
-    __slots__ = [
-        "fid",
-        "path",
-        "time_scanned",
-    ]
 
     fid: int
     path: str
