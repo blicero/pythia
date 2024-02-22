@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-22 18:27:13 krylon>
+# Time-stamp: <2024-02-22 22:34:50 krylon>
 #
 # /data/code/python/pythia/database.py
 # created on 22. 02. 2024
@@ -72,7 +72,7 @@ class Query(Enum):
 
 
 db_queries: Final[dict[Query, str]] = {
-    Query.FolderAdd: "INSERT INTO folder (path) VALUES (?)",
+    Query.FolderAdd: "INSERT INTO folder (path) VALUES (?) RETURNING id",
     Query.FolderUpdateScan: "UPDATE folder SET time_scanned = ? WHERE id = ?",
     Query.FolderGetByPath:
     "SELECT id, time_scanned FROM folder WHERE path = ?",
@@ -89,6 +89,7 @@ INSERT INTO file
     (folder_id, path, time_scanned, mtime, content_type, mime_type, meta, content)
 VALUES
     (        ?,    ?,            ?,     ?,            ?,         ?,    ?,       ?)
+RETURNING id
     """,
     Query.FileGetByPath: """
 SELECT
