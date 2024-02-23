@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-23 18:03:00 krylon>
+# Time-stamp: <2024-02-23 22:01:36 krylon>
 #
 # /data/code/python/pythia/database.py
 # created on 22. 02. 2024
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS file (
     content TEXT NOT NULL,
     FOREIGN KEY (folder_id) REFERENCES folder (id)
         ON UPDATE RESTRICT
-        ON DELETE_RECURSIVE,
+        ON DELETE CASCADE,
     CHECK (json_valid(meta))
 ) STRICT
     """,
@@ -222,7 +222,7 @@ class Database:
         cur.execute(db_queries[Query.FolderGetByPath], (path, ))
         row = cur.fetchone()
         if row is not None:
-            f = Folder(row[0], path, datetime.fromtimestamp(row[1]))
+            f = Folder(fid=row[0], path=path, time_scanned=datetime.fromtimestamp(row[1]))
             return f
         return None
 
@@ -232,7 +232,9 @@ class Database:
         cur.execute(db_queries[Query.FolderGetAll])
         folders: list[Folder] = []
         for row in cur:
-            f: Folder = Folder(row[0], row[1], datetime.fromtimestamp(row[2]))
+            f: Folder = Folder(fid=row[0],
+                               path=row[1],
+                               time_scanned=datetime.fromtimestamp(row[2]))
             folders.append(f)
         return folders
 
