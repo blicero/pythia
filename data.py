@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-23 13:31:51 krylon>
+# Time-stamp: <2024-02-23 17:50:20 krylon>
 #
 # /data/code/python/pythia/data.py
 # created on 21. 02. 2024
@@ -19,6 +19,7 @@ pythia.data
 This modules defines data types used throughout the application.
 """
 
+import json
 import os
 import re
 import stat
@@ -139,8 +140,8 @@ class File:  # pylint: disable-msg=R0903,R0902
         self.folder_id = fields.get("folder_id", 0)
         self.path = path
         self.time_scanned = fields.get("time_scanned", datetime.now())
-        if "time_modified" in fields:
-            self.mtime = fields["time_modified"]
+        if "mtime" in fields:
+            self.mtime = fields["mtime"]
         else:
             st = os.stat(path)
             mtime = datetime.fromtimestamp(st[stat.ST_MTIME])
@@ -148,6 +149,23 @@ class File:  # pylint: disable-msg=R0903,R0902
         self.content_type = fields.get("content_type", FileType.Other)
         self.meta = fields.get("meta", {})
         self.content = fields.get("content", "")
+
+    @classmethod
+    def from_db(cls, row: tuple[Any, ...]) -> Any:
+        """Recreate a File object from a database record."""
+        fields = {
+            "folder_id": row[1],
+            "time_scanned": datetime.fromtimestamp(row[3]),
+            "mtime": datetime.fromtimestamp(row[4]),
+            "content_type": FileType(row[5]),
+            "mime_type": row[6],
+            "meta": json.loads(row[7]),
+            "content": row[8],
+        }
+        f: File = File(row[2], fields)
+        f.fid = row[0]
+        return f
+
 
 # Local Variables: #
 # python-indent: 4 #
