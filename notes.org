@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2024-02-23 13:32:55 krylon>
+# Time-stamp: <2024-02-23 18:38:21 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -21,17 +21,17 @@
    :VISIBILITY: children
    :END:
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2024-02-23 Fr 13:32]
+   #+CAPTION: Clock summary at [2024-02-23 Fr 18:38]
    | Headline               | Time   |        |      |      |
    |------------------------+--------+--------+------+------|
-   | *Total time*           | *6:32* |        |      |      |
+   | *Total time*           | *9:35* |        |      |      |
    |------------------------+--------+--------+------+------|
-   | *Pythia*               | *6:32* |        |      |      |
-   | \_  /Components [0/0]/ |        | /6:32/ |      |      |
+   | *Pythia*               | *9:35* |        |      |      |
+   | \_  /Components [0/0]/ |        | /9:35/ |      |      |
    | \_    Data types [0/0] |        |        | 2:59 |      |
-   | \_    Database [0/0]   |        |        | 1:34 |      |
-   | \_    Crawler [0/1]    |        |        | 1:59 |      |
-   | \_      Blacklist      |        |        |      | 0:15 |
+   | \_    Database [0/0]   |        |        | 4:20 |      |
+   | \_    Crawler [0/1]    |        |        | 2:16 |      |
+   | \_      Blacklist      |        |        |      | 0:32 |
    #+END:
 ** Features [0/0]
    :PROPERTIES:
@@ -58,6 +58,7 @@
     :VISIBILITY: children
     :END:
     :LOGBOOK:
+    CLOCK: [2024-02-23 Fr 15:52]--[2024-02-23 Fr 18:38] =>  2:46
     CLOCK: [2024-02-22 Do 18:05]--[2024-02-22 Do 19:05] =>  1:00
     CLOCK: [2024-02-22 Do 17:27]--[2024-02-22 Do 18:01] =>  0:34
     :END:
@@ -73,6 +74,7 @@
     :END:
 **** TODO Blacklist
      :LOGBOOK:
+     CLOCK: [2024-02-23 Fr 15:35]--[2024-02-23 Fr 15:52] =>  0:17
      CLOCK: [2024-02-23 Fr 13:14]--[2024-02-23 Fr 13:29] =>  0:15
      :END:
 *** Extractors [0/0]
