@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-23 17:50:20 krylon>
+# Time-stamp: <2024-02-23 22:06:13 krylon>
 #
 # /data/code/python/pythia/data.py
 # created on 21. 02. 2024
@@ -91,13 +91,18 @@ class Blacklist:  # pylint: disable-msg=R0903
         self.patterns.sort(key=lambda x: -x.cnt)
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, kw_only=True)
 class Folder:  # pylint: disable-msg=R0903
     """Folder reprents a directory tree that we might want to scan."""
 
     fid: int
     path: str
     time_scanned: datetime
+
+    def __init__(self, **fields) -> None:
+        self.fid = fields.get("fid", 0)
+        self.path = fields["path"]
+        self.time_scanned = fields.get("time_scanned", datetime.now())
 
 
 class FileType(Enum):
