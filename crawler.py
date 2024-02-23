@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-22 22:34:11 krylon>
+# Time-stamp: <2024-02-23 13:31:15 krylon>
 #
 # /data/code/python/pythia/crawler.py
 # created on 22. 02. 2024
@@ -30,7 +30,7 @@ class Crawler:
     __slots__ = [
         "log",
         "db",
-        "folders"
+        "folders",
         "fileq",
         "lock",
         "active",
@@ -48,17 +48,19 @@ class Crawler:
     def __init__(self, *folders: str) -> None:
         self.log = common.get_logger("crawler")
         self.db = database.Database()
-        self.folders = folders
+        self.folders = list(folders)
         self.fileq = SimpleQueue()
         self.lock = Lock()
         self.active = False
         self.workers = []
 
     def is_active(self) -> bool:
+        """Returns the Crawler's active flag."""
         with self.lock:
             return self.active
 
     def stop(self) -> None:
+        """Tell the Crawler to stop."""
         with self.lock:
             self.active = False
 
@@ -73,10 +75,9 @@ class Crawler:
 
     def __worker(self, tree: str) -> None:
         self.log.debug("Process folder %s", tree)
-        db = database.Database()
-        
-        for folder, subfolders, files in os.walk(tree):
-            pass
+        # db = database.Database()
+        # for folder, subfolders, files in os.walk(tree):
+        #     pass
 
 # Local Variables: #
 # python-indent: 4 #
