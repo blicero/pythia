@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-22 19:21:46 krylon>
+# Time-stamp: <2024-02-23 13:31:51 krylon>
 #
 # /data/code/python/pythia/data.py
 # created on 21. 02. 2024
@@ -20,11 +20,74 @@ This modules defines data types used throughout the application.
 """
 
 import os
+import re
 import stat
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any
+from threading import Lock
+from typing import Any, Union
+
+
+class BlacklistItem:  # pylint: disable-msg=R0903
+    """An item in the blacklist"""
+
+    __slots__ = ["iid", "pat", "cnt"]
+
+    iid: int
+    pat: re.Pattern
+    cnt: int
+
+    def __init__(self, pat: Union[str, re.Pattern], cnt: int = 0, iid: int = 0) -> None:
+        self.iid = iid
+        self.cnt = cnt
+        if isinstance(pat, str):
+            self.pat = re.compile(pat)
+        else:
+            self.pat = pat
+
+    def match(self, s: str) -> bool:
+        """Check if the Item's pattern matches the given string."""
+        m = self.pat.search(s)
+        if m is None:
+            return False
+        self.cnt += 1
+        return True
+
+
+class Blacklist:  # pylint: disable-msg=R0903
+    """A sorted blacklist of patterns to match filenames against."""
+
+    __slots__ = ["patterns", "lock"]
+
+    patterns: list[BlacklistItem]
+    lock: Lock
+
+    def __init__(self, *pat: Union[str, re.Pattern, BlacklistItem]) -> None:
+        self.patterns = []
+        self.lock = Lock()
+
+        for i in pat:
+            if isinstance(i, (str, re.Pattern)):
+                p = BlacklistItem(i)
+                self.patterns.append(p)
+            else:
+                assert isinstance(i, BlacklistItem)
+                self.patterns.append(i)
+
+    def match(self, path: str) -> bool:
+        """Check if any of the patterns in the Blacklist match the given string."""
+        with self.lock:
+            for p in self.patterns:
+                if p.match(path):
+                    self.__sort()
+                    return True
+            return False
+
+    def __sort(self) -> None:
+        """Sort the BlacklistItems so that the items with the most hits move to the
+        front of the list."""
+        self.patterns.sort(key=lambda x: -x.cnt)
 
 
 @dataclass(slots=True)
