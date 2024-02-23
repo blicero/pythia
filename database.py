@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-22 22:34:50 krylon>
+# Time-stamp: <2024-02-23 18:03:00 krylon>
 #
 # /data/code/python/pythia/database.py
 # created on 22. 02. 2024
@@ -17,17 +17,24 @@ pythia.database
 (c) 2024 Benjamin Walkenhorst
 """
 
+import json
 import logging
 import sqlite3
+from datetime import datetime
 from enum import Enum, auto
 from threading import Lock
-from typing import Final, Optional
+from typing import Final, Optional, Union
 
 import krylib
 
 from pythia import common
+from pythia.data import File, Folder
 
 OPEN_LOCK: Final[Lock] = Lock()
+
+# NB We store the content_type Enum as an integer,
+# because converting between enums and integers
+# is trivial.
 
 INIT_QUERIES: Final[list[str]] = [
     """
@@ -44,16 +51,19 @@ CREATE TABLE IF NOT EXISTS file (
     path TEXT UNIQUE NOT NULL,
     time_scanned INTEGER NOT NULL,
     mtime INTEGER NOT NULL,
-    content_type TEXT NOT NULL,
+    content_type INTEGER NOT NULL,
     mime_type TEXT NOT NULL,
     meta TEXT,
     content TEXT NOT NULL,
-    FOREIGN KEY (folder_id) REFERENCES folder (id),
+    FOREIGN KEY (folder_id) REFERENCES folder (id)
+        ON UPDATE RESTRICT
+        ON DELETE_RECURSIVE,
     CHECK (json_valid(meta))
 ) STRICT
     """,
     "CREATE UNIQUE INDEX IF NOT EXISTS file_path_idx ON file (path)",
     "CREATE INDEX IF NOT EXISTS file_scan_time_idx ON file (time_scanned)",
+    "CREATE INDEX IF NOT EXISTS file_type_idx ON file (content_type)",
 ]
 
 
@@ -95,6 +105,7 @@ RETURNING id
 SELECT
     id,
     folder_id,
+    path,
     time_scanned,
     mtime,
     content_type,
@@ -106,6 +117,7 @@ WHERE path = ?
     """,
     Query.FileGetByID: """
 SELECT
+    id,
     folder_id,
     path,
     time_scanned,
@@ -120,6 +132,7 @@ WHERE id = ?
     Query.FileGetByFolder: """
 SELECT
     id,
+    folder_id,
     path,
     time_scanned,
     mtime,
@@ -187,6 +200,92 @@ class Database:
 
     def __exit__(self, ex_type, ex_val, traceback):
         return self.db.__exit__(ex_type, ex_val, traceback)
+
+    def folder_add(self, f: Folder) -> None:
+        """Add a Folder to the database."""
+        cur = self.db.cursor()
+        cur.execute(db_queries[Query.FolderAdd], (f.path, ))
+        row = cur.fetchone()
+        f.fid = row[0]
+
+    def folder_update_scan(self, f: Folder, stamp: Optional[datetime]) -> None:
+        """Update a Folder's last_scanned timestamp."""
+        if stamp is None:
+            stamp = datetime.now()
+        cur = self.db.cursor()
+        cur.execute(db_queries[Query.FolderUpdateScan], (stamp.timestamp(), f.fid))
+        f.time_scanned = stamp
+
+    def folder_get_by_path(self, path: str) -> Optional[Folder]:
+        """Fetch a folder by its path"""
+        cur = self.db.cursor()
+        cur.execute(db_queries[Query.FolderGetByPath], (path, ))
+        row = cur.fetchone()
+        if row is not None:
+            f = Folder(row[0], path, datetime.fromtimestamp(row[1]))
+            return f
+        return None
+
+    def folder_get_all(self) -> list[Folder]:
+        """Fetch all Folders from the database."""
+        cur = self.db.cursor()
+        cur.execute(db_queries[Query.FolderGetAll])
+        folders: list[Folder] = []
+        for row in cur:
+            f: Folder = Folder(row[0], row[1], datetime.fromtimestamp(row[2]))
+            folders.append(f)
+        return folders
+
+    def file_add(self, f: File) -> None:
+        """Add a File to the database."""
+        cur = self.db.cursor()
+        cur.execute(db_queries[Query.FileAdd],
+                    (f.folder_id,
+                     f.path,
+                     f.time_scanned.timestamp(),
+                     f.mtime.timestamp(),
+                     f.content_type.value,
+                     f.mime_type,
+                     f.content,
+                     json.dumps(f.meta)))
+        row = cur.fetchone()
+        f.fid = row[0]
+
+    def file_get_by_path(self, path: str) -> Optional[File]:
+        """Look up a File by its path."""
+        cur = self.db.cursor()
+        cur.execute(db_queries[Query.FileGetByPath], (path, ))
+        row = cur.fetchone()
+        if row is None:
+            return None
+        return File.from_db(row)
+
+    def FileGetByID(self, file_id: int) -> Optional[File]:
+        """Look up a File by its database ID"""
+        cur = self.db.cursor()
+        cur.execute(db_queries[Query.FileGetByID], (file_id, ))
+        row = cur.fetchone()
+        if row is None:
+            return None
+        return File.from_db(row)
+
+    def FileGetByFolder(self, folder: Union[Folder, int]) -> list[File]:
+        """Get all files found in a given directory tree."""
+        fid: int = 0
+        if isinstance(folder, Folder):
+            fid = folder.fid
+        elif isinstance(folder, int):
+            fid = folder
+        else:
+            raise TypeError(f"'folder' must be a Folder object or an int, not a {type(folder)}")
+        cur = self.db.cursor()
+        cur.execute(db_queries[Query.FileGetByFolder], (fid, ))
+        results: list[File] = []
+        for row in cur:
+            f = File.from_db(row)
+            results.append(f)
+        return results
+
 
 # Local Variables: #
 # python-indent: 4 #
