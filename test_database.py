@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-23 22:03:42 krylon>
+# Time-stamp: <2024-02-24 15:24:39 krylon>
 #
 # /data/code/python/pythia/test_database.py
 # created on 23. 02. 2024
@@ -18,13 +18,15 @@ pythia.test_database
 """
 
 import os
+import sqlite3
 import unittest
 from datetime import datetime
+from typing import Final
 
 from krylib import isdir
 
 from pythia import common, database
-from pythia.data import Folder
+from pythia.data import File, FileType, Folder
 
 TEST_ROOT: str = "/tmp/"
 
@@ -68,11 +70,61 @@ class DatabaseTest(unittest.TestCase):
 
     def test_02_db_folder_add(self) -> None:
         """Try adding some folders."""
-        f: Folder = Folder(path="/home/capybara/Documents")  # pylint: disable-msg=E1125
+        f: Final[Folder] = Folder(path="/home/capybara/Documents")  # pylint: disable-msg=E1125
         db = self.__get_db()
         with db:
             db.folder_add(f)
             self.assertNotEqual(f.fid, 0)
+
+        f2: Final[Folder] = Folder(path="/home/capybara/Documents")
+        with db:
+            with self.assertRaises(sqlite3.IntegrityError):
+                db.folder_add(f2)
+
+    def test_03_db_folder_get_all(self) -> None:
+        """Try to load all folders from the database."""
+        db = self.__get_db()
+        folders = db.folder_get_all()
+        self.assertEqual(len(folders), 1)
+        self.assertEqual(folders[0].path, "/home/capybara/Documents")
+
+    def test_04_db_folder_get_by_path(self) -> None:
+        """Try to get a folder by its path. Also, try to get a folder we know
+        does not exist."""
+        db = self.__get_db()
+        f = db.folder_get_by_path("/home/capybara/Documents")
+        self.assertIsNotNone(f)
+        self.assertIsInstance(f, Folder)
+
+        f = db.folder_get_by_path("/spam")
+        self.assertIsNone(f)
+
+    def test_05_file_add(self):
+        """Try adding a file to the database."""
+        db = self.__get_db()
+        f = File("/home/capybara/Documents/sunset.jpg",
+                 {"folder_id": 1,
+                  "time_scanned": datetime(2024, 2, 24, 15, 2, 22),
+                  "mtime": datetime(2024, 2, 7, 18, 21, 14),
+                  "content_type": FileType.Image,
+                  "meta": {},
+                  "content": "",
+                  })
+        with db:
+            db.file_add(f)
+            self.assertNotEqual(f.fid, 0)
+
+        f2 = File("/home/krylon/code/python/pythia/database.py",
+                  {"folder_id": 42,
+                   "time_scanned": datetime(2024, 2, 24, 15, 2, 22),
+                   "mtime": datetime(2024, 2, 7, 18, 21, 14),
+                   "content_type": FileType.Image,
+                   "meta": {},
+                   "content": "",
+                   })
+        with db:
+            with self.assertRaises(sqlite3.IntegrityError):
+                db.file_add(f2)
 
 # Local Variables: #
 # python-indent: 4 #
