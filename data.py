@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-23 22:06:13 krylon>
+# Time-stamp: <2024-02-24 15:09:32 krylon>
 #
 # /data/code/python/pythia/data.py
 # created on 21. 02. 2024
@@ -153,6 +153,7 @@ class File:  # pylint: disable-msg=R0903,R0902
             self.mtime = mtime
         self.content_type = fields.get("content_type", FileType.Other)
         self.meta = fields.get("meta", {})
+        self.mime_type = fields.get("mime_type", "application/octet-stream")
         self.content = fields.get("content", "")
 
     @classmethod
