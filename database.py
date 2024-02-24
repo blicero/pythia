@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-23 22:01:36 krylon>
+# Time-stamp: <2024-02-24 15:12:19 krylon>
 #
 # /data/code/python/pythia/database.py
 # created on 22. 02. 2024
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS file (
     FOREIGN KEY (folder_id) REFERENCES folder (id)
         ON UPDATE RESTRICT
         ON DELETE CASCADE,
-    CHECK (json_valid(meta))
+    CHECK (meta = '' OR json_valid(meta))
 ) STRICT
     """,
     "CREATE UNIQUE INDEX IF NOT EXISTS file_path_idx ON file (path)",
