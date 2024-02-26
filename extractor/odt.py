@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-26 09:41:06 krylon>
+# Time-stamp: <2024-02-26 19:25:35 krylon>
 #
 # /data/code/python/pythia/extractor/odt.py
 # created on 26. 02. 2024
@@ -18,10 +18,10 @@ pythia.extractor.odt
 """
 
 from pythia import common
-from pythia.extractor.base import BaseExtractor
+from pythia.extractor.base import Extractor
 
 
-class ODTExtractor(BaseExtractor):
+class ODTExtractor(Extractor):  # pylint: disable-msg=R0903
     """Extractor for ODF text documents"""
 
     def __init__(self):

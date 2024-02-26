@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-26 09:38:45 krylon>
+# Time-stamp: <2024-02-26 19:25:35 krylon>
 #
 # /data/code/python/pythia/extractor/base.py
 # created on 24. 02. 2024
@@ -20,22 +20,26 @@ pythia.extractor.base
 import logging
 from abc import ABC, abstractmethod
 
+from pythia import common
 from pythia.data import File
 
 
-class BaseExtractor(ABC):
+class Extractor(ABC):  # pylint: disable-msg=R0903
     """Abstract base class for the various extractors."""
 
     __slots__ = [
+        "name",
         "_log",
     ]
 
     _log: logging.Logger
 
+    def _initialize(self):
+        self._log = common.get_logger(self.__class__.__name__)
+
     @abstractmethod
     def process(self, f: File) -> bool:
         """Process a file, attempt to extract content and metadata."""
-        pass
 
 
 # Local Variables: #
