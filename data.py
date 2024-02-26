@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-26 18:08:29 krylon>
+# Time-stamp: <2024-02-26 19:39:23 krylon>
 #
 # /data/code/python/pythia/data.py
 # created on 21. 02. 2024
@@ -27,7 +27,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, auto
 from threading import Lock
-from typing import Any, Union
+from typing import Any, Final, Union
 
 
 class BlacklistItem:  # pylint: disable-msg=R0903
@@ -114,6 +114,9 @@ class FileType(Enum):
     Other = auto()
 
 
+suffix_pat: Final[re.Pattern] = re.compile(r"[.](\w+)$")
+
+
 class File:  # pylint: disable-msg=R0903,R0902
     """File represents a file and some metadata, plus any text we manage
     to extract from it."""
@@ -155,6 +158,14 @@ class File:  # pylint: disable-msg=R0903,R0902
             else:
                 self.mime_type = mt[0]
         self.content = fields.get("content", "")
+
+    def suffix(self) -> str:
+        """Return the filename's suffix, if it has one."""
+        m = suffix_pat.search(self.path)
+        if m is None:
+            return ""
+        else:
+            return m[1].lower()
 
     @classmethod
     def from_db(cls, row: tuple[Any, ...]) -> Any:
