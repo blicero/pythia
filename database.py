@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-24 15:12:19 krylon>
+# Time-stamp: <2024-02-24 19:15:51 krylon>
 #
 # /data/code/python/pythia/database.py
 # created on 22. 02. 2024
@@ -50,7 +50,6 @@ CREATE TABLE IF NOT EXISTS file (
     folder_id INTEGER NOT NULL,
     path TEXT UNIQUE NOT NULL,
     time_scanned INTEGER NOT NULL,
-    mtime INTEGER NOT NULL,
     content_type INTEGER NOT NULL,
     mime_type TEXT NOT NULL,
     meta TEXT,
@@ -96,9 +95,9 @@ ORDER BY path
     """,
     Query.FileAdd: """
 INSERT INTO file
-    (folder_id, path, time_scanned, mtime, content_type, mime_type, meta, content)
+    (folder_id, path, time_scanned, content_type, mime_type, meta, content)
 VALUES
-    (        ?,    ?,            ?,     ?,            ?,         ?,    ?,       ?)
+    (        ?,    ?,            ?,            ?,         ?,    ?,       ?)
 RETURNING id
     """,
     Query.FileGetByPath: """
@@ -107,7 +106,6 @@ SELECT
     folder_id,
     path,
     time_scanned,
-    mtime,
     content_type,
     mime_type,
     meta,
@@ -121,7 +119,6 @@ SELECT
     folder_id,
     path,
     time_scanned,
-    mtime,
     content_type,
     mime_type,
     meta,
@@ -135,7 +132,6 @@ SELECT
     folder_id,
     path,
     time_scanned,
-    mtime,
     content_type,
     mime_type,
     meta,
@@ -146,7 +142,7 @@ ORDER BY path
     """,
     Query.FileUpdate: """
 UPDATE file SET
-    time_scanned = ?, mtime = ?, content_type = ?, mime_type = ?, meta = ?, content = ?
+    time_scanned = ?, content_type = ?, mime_type = ?, meta = ?, content = ?
 WHERE id = ?
     """,
     Query.FileDelete: "DELETE FROM file WHERE id = ?",
@@ -245,7 +241,6 @@ class Database:
                     (f.folder_id,
                      f.path,
                      f.time_scanned.timestamp(),
-                     f.mtime.timestamp(),
                      f.content_type.value,
                      f.mime_type,
                      f.content,
@@ -262,7 +257,7 @@ class Database:
             return None
         return File.from_db(row)
 
-    def FileGetByID(self, file_id: int) -> Optional[File]:
+    def file_get_by_id(self, file_id: int) -> Optional[File]:
         """Look up a File by its database ID"""
         cur = self.db.cursor()
         cur.execute(db_queries[Query.FileGetByID], (file_id, ))
@@ -271,7 +266,7 @@ class Database:
             return None
         return File.from_db(row)
 
-    def FileGetByFolder(self, folder: Union[Folder, int]) -> list[File]:
+    def file_get_by_folder(self, folder: Union[Folder, int]) -> list[File]:
         """Get all files found in a given directory tree."""
         fid: int = 0
         if isinstance(folder, Folder):

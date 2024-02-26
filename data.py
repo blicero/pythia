@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-24 15:09:32 krylon>
+# Time-stamp: <2024-02-26 18:08:29 krylon>
 #
 # /data/code/python/pythia/data.py
 # created on 21. 02. 2024
@@ -20,9 +20,9 @@ This modules defines data types used throughout the application.
 """
 
 import json
+import mimetypes
 import os
 import re
-import stat
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum, auto
@@ -123,7 +123,6 @@ class File:  # pylint: disable-msg=R0903,R0902
         "folder_id",
         "path",
         "time_scanned",
-        "mtime",
         "content_type",
         "mime_type",
         "content",
@@ -134,7 +133,6 @@ class File:  # pylint: disable-msg=R0903,R0902
     folder_id: int
     path: str
     time_scanned: datetime
-    mtime: datetime
     content_type: FileType
     mime_type: str
     content: str
@@ -145,15 +143,17 @@ class File:  # pylint: disable-msg=R0903,R0902
         self.folder_id = fields.get("folder_id", 0)
         self.path = path
         self.time_scanned = fields.get("time_scanned", datetime.now())
-        if "mtime" in fields:
-            self.mtime = fields["mtime"]
-        else:
-            st = os.stat(path)
-            mtime = datetime.fromtimestamp(st[stat.ST_MTIME])
-            self.mtime = mtime
         self.content_type = fields.get("content_type", FileType.Other)
         self.meta = fields.get("meta", {})
-        self.mime_type = fields.get("mime_type", "application/octet-stream")
+        # self.mime_type = fields.get("mime_type", "application/octet-stream")
+        if "mime_type" in fields:
+            self.mime_type = fields["mime_type"]
+        else:
+            mt = mimetypes.guess_type(path)
+            if mt[0] is None:
+                self.mime_type = "application/octet-stream"
+            else:
+                self.mime_type = mt[0]
         self.content = fields.get("content", "")
 
     @classmethod
@@ -162,7 +162,6 @@ class File:  # pylint: disable-msg=R0903,R0902
         fields = {
             "folder_id": row[1],
             "time_scanned": datetime.fromtimestamp(row[3]),
-            "mtime": datetime.fromtimestamp(row[4]),
             "content_type": FileType(row[5]),
             "mime_type": row[6],
             "meta": json.loads(row[7]),
@@ -172,6 +171,11 @@ class File:  # pylint: disable-msg=R0903,R0902
         f.fid = row[0]
         return f
 
+    def needs_update(self) -> bool:
+        """Checks if the file needs to be scanned again."""
+        s = os.stat(self.path)
+        m = datetime.fromtimestamp(s.st_mtime)
+        return m > self.time_scanned
 
 # Local Variables: #
 # python-indent: 4 #
