@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-26 20:06:46 krylon>
+# Time-stamp: <2024-02-27 15:10:50 krylon>
 #
 # /data/code/python/pythia/inspector.py
 # created on 26. 02. 2024
@@ -36,7 +36,8 @@ class Inspector:  # pylint: disable-msg=R0903
         match f.suffix():
             case "pdf":
                 return PDFExtractor()
-            
+            case "mp3" | "ogg" | "flac" | "opus":
+                return AudioExtractor()
 
 
 # Local Variables: #
