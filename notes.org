@@ -1,5 +1,5 @@
 # -*- mode: org; fill-column: 78; -*-
-# Time-stamp: <2024-02-27 15:13:34 krylon>
+# Time-stamp: <2024-02-27 15:14:05 krylon>
 #
 #+TAGS: internals(i) ui(u) bug(b) feature(f)
 #+TAGS: database(d) design(e), meditation(m)
@@ -21,7 +21,7 @@
    :VISIBILITY: children
    :END:
    #+BEGIN: clocktable :scope file :maxlevel 255 :emphasize t
-   #+CAPTION: Clock summary at [2024-02-27 Di 15:13]
+   #+CAPTION: Clock summary at [2024-02-27 Di 15:14]
    | Headline               | Time    |         |      |      |
    |------------------------+---------+---------+------+------|
    | *Total time*           | *16:19* |         |      |      |
@@ -97,11 +97,11 @@
     I need to think about what kind of interface I want.
 **** TODO Office documents
 **** TODO Images
-**** TODO PDF
+**** TEST PDF
      :LOGBOOK:
      CLOCK: [2024-02-26 Mo 18:19]--[2024-02-26 Mo 19:19] =>  1:00
      :END:
-**** TODO Audio
+**** TEST Audio
      :LOGBOOK:
      CLOCK: [2024-02-27 Di 14:53]--[2024-02-27 Di 15:13] =>  0:20
      :END:
