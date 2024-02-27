@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-26 19:25:35 krylon>
+# Time-stamp: <2024-02-27 15:02:38 krylon>
 #
 # /data/code/python/pythia/extractor/base.py
 # created on 24. 02. 2024
@@ -29,13 +29,15 @@ class Extractor(ABC):  # pylint: disable-msg=R0903
 
     __slots__ = [
         "name",
-        "_log",
+        "log",
     ]
 
-    _log: logging.Logger
+    log: logging.Logger
+    name: str
 
-    def _initialize(self):
-        self._log = common.get_logger(self.__class__.__name__)
+    def __init__(self) -> None:
+        self.name = self.__class__.__name__
+        self.log = common.get_logger(self.name)
 
     @abstractmethod
     def process(self, f: File) -> bool:
