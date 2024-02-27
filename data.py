@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-26 19:39:23 krylon>
+# Time-stamp: <2024-02-27 15:03:54 krylon>
 #
 # /data/code/python/pythia/data.py
 # created on 21. 02. 2024
@@ -164,8 +164,7 @@ class File:  # pylint: disable-msg=R0903,R0902
         m = suffix_pat.search(self.path)
         if m is None:
             return ""
-        else:
-            return m[1].lower()
+        return m[1].lower()
 
     @classmethod
     def from_db(cls, row: tuple[Any, ...]) -> Any:
