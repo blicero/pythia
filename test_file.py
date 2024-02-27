@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-26 19:38:47 krylon>
+# Time-stamp: <2024-02-27 15:04:20 krylon>
 #
 # /data/code/python/pythia/test_file.py
 # created on 26. 02. 2024
@@ -26,6 +26,7 @@ class FileTest(unittest.TestCase):
     """Tests for the File."""
 
     def test_find_suffix(self) -> None:
+        """Test extracting the suffix from file names."""
         test_cases = (
             ("/data/Documents/report2022.pdf", "pdf"),
             ("/home/somebody/image.jpg", "jpg"),

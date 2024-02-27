@@ -22,9 +22,10 @@ from pythia import common
 from pythia.data import File
 from pythia.extractor.base import Extractor
 from pythia.extractor.pdf import PDFExtractor
+from pythia.extractor.audio import AudioExtractor
 
 
-class Inspector:
+class Inspector:  # pylint: disable-msg=R0903
     """Inspector deals with file content."""
 
     def __init__(self) -> None:

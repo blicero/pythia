@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2024-02-26 19:25:35 krylon>
+# Time-stamp: <2024-02-27 15:05:06 krylon>
 #
 # /data/code/python/pythia/extractor/pdf.py
 # created on 26. 02. 2024
@@ -26,9 +26,6 @@ from pythia.extractor.base import Extractor
 
 class PDFExtractor(Extractor):  # pylint: disable-msg=R0903
     """Exctractor for PDF files"""
-
-    def __init__(self):
-        self._initialize()
 
     def process(self, f: File) -> bool:
         """Attempt to extract metadata from a PDF document."""
